@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# fix distfeeds
+sed -i "/ace8/d" /etc/opkg/distfeeds.conf
+sed -i "/passwall_packages/d" /etc/opkg/distfeeds.conf
+sed -i "/helloworld/d" /etc/opkg/distfeeds.conf
+
+uci -q batch <<-EOF
+  set argon.@global[0]=global
+  set argon.@global[0].primary='#ff6900'
+  set argon.@global[0].dark_primary='#ff6900'
+  set argon.@global[0].blur='10'
+  set argon.@global[0].blur_dark='10'
+  set argon.@global[0].transparency='0.5'
+  set argon.@global[0].transparency_dark='0.5'
+  set argon.@global[0].mode='light'
+  set argon.@global[0].online_wallpaper='none'
+  commit argon
+EOF
+
+sed -i '4d' /etc/rc.local
+cat >> /etc/rc.local <<-"EOF"
+#/bin/ash
+
+echo "255 255 255" > /sys/class/leds/rgb:network/multi_intensity
+echo "255 255 255" > /sys/class/leds/rgb:status/multi_intensity
+
+exit 0
+EOF
+
+
+exit 0
