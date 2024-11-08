@@ -26,7 +26,7 @@ env:
   REPO_BRANCH: openwrt-23.05
   FEEDS_CONF: laoliuonly/f33d5.c0nf.d3f4ult
   CONFIG_FILE: laoliuonly/redmi_ax6000/ax6000-2305.conf
-  DIY_P1_SH: laoliuonly/redmi_ax6000/d1y-p4r71.sh
+  DIY_P1_SH: mt7986/ax6k/p4n4v4n0nly/laoliu/d1y-p4r71.sh
   DIY_P2_SH: laoliuonly/redmi_ax6000/d1y-p4r72.sh
   
   UPLOAD_BIN_DIR: false
