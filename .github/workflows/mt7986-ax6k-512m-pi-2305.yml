@@ -8,7 +8,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: Build poi laoliu 23.05
+name: Build mt7986 ax6k 512m 23.05 laoliu Atcions
 
 on:
   repository_dispatch:
