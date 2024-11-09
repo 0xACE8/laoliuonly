@@ -18,6 +18,8 @@ on:
         description: 'SSH connection to Actions'
         required: false
         default: 'false'
+  schedule:
+    - cron: 00 21 * * 1
 
 env:
   REPO_URL: https://github.com/padavanonly/immortalwrt-mt798x-23.05
