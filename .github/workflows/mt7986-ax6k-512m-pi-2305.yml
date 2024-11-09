@@ -176,7 +176,7 @@ jobs:
         rm -rf profiles.json
         rm -rf *.manifest
         rm -rf sha256sums
-        rename 's/immortalwrt-mediatek/padavanonly_2305_512mb_laoliu/' *        
+        rename 's/immortalwrt-mediatek-mt7986-xiaomi_redmi-router-ax6000-squashfs-sysupgrade/padavanonly-2305-laoliu-512m-mt7986-redmi-ax6000-sysupgrade/' *
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
         
