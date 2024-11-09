@@ -4,8 +4,8 @@
 # This is free software, licensed under the MIT License.
 # See /LICENSE for more information.
 #
-# https://github.com/P3TERX/
-# Description: Build using GitHub Actions
+# https://github.com/P3TERX/Actions-OpenWrt
+# Description: Build OpenWrt using GitHub Actions
 #
 
 name: Build mt7981 xr30 23.05 laoliu Atcions
@@ -16,31 +16,36 @@ on:
     inputs:
       ssh:
         description: 'SSH connection to Actions'
-        required: true
+        required: false
         default: 'false'
-  schedule:
-    - cron: 00 23 * * 1
 
 env:
   REPO_URL: https://github.com/padavanonly/immortalwrt-mt798x-23.05
   REPO_BRANCH: openwrt-23.05
-  FEEDS_CONF: laoliuonly/f33d5.c0nf.d3f4ult
-  CONFIG_FILE: laoliuonly/cmcc-xr30/xr30p23.c0nf
-  DIY_P1_SH: laoliuonly/cmcc-xr30/d1y-p4r71.sh
-  DIY_P2_SH: laoliuonly/cmcc-xr30/d1y-p4r72.sh
+  FEEDS_CONF: f33d5.c0nf.d3f4ult
+  CONFIG_FILE: cmcc-xr30/xr30_2305.conf
+  DIY_P1_SH: cmcc-xr30/d1y-p4r71.sh
+  DIY_P2_SH: cmcc-xr30/d1y-p4r72.sh
+
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
-  TZ: "America/Los_Angeles"
-  OPENWRT_NAME: padavanonly_2305
+  UPLOAD_COWTRANSFER: true
+  UPLOAD_WETRANSFER: false
+  UPLOAD_RELEASE: false
+  TZ: Asia/Shanghai
+
 
 jobs:
   build:
     runs-on: ubuntu-22.04
 
+    permissions:
+      contents: write
+    
     steps:
-    - name: Checkout
+    - name: 检查项目分支
       uses: actions/checkout@main
-
+      
     - name: Free Disk Space (Ubuntu)
       uses: jlumbroso/free-disk-space@main
       with:
@@ -70,22 +75,22 @@ jobs:
         echo "已安装内存详细信息:"
         echo -e "$(sudo lshw -short -C memory | grep GiB)\n"
         echo "--------------------------硬盘信息--------------------------"
-        echo "硬盘数量: $(ls /dev/sd* | grep -v [1-9] | wc -l)" && df -hT
-
-    - name: Initialization environment
+      
+    - name: 初始化编译环境
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
-        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+        sudo docker image prune --all --force
         sudo -E apt-get -qq update
-        sudo bash -c 'bash <(curl -s https://build-scripts.immortalwrt.org/init_build_environment.sh)'
+        sudo -E apt-get -qq install ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libfuse-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libpython3-dev libreadline-dev libssl-dev libtool lrzsz mkisofs msmtp ninja-build p7zip p7zip-full patch pkgconf python2.7 python3 python3-pyelftools python3-setuptools qemu-utils rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev rename
         sudo -E apt-get -qq autoremove --purge
         sudo -E apt-get -qq clean
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
-
-    - name: Clone source code
+        
+    - name: 下载固件源码
       working-directory: /workdir
       run: |
         df -hT $PWD
@@ -96,55 +101,41 @@ jobs:
       uses: stupidloud/cachewrtbuild@main
       with:
         ccache: 'true'
-        mixkey: 'ax6k23p'
+        mixkey: 'ax6000pi2305'
         prefix: 'openwrt'
-
-    - name: Load custom feeds
+        
+    - name: 加载feeds.conf.default & DIY_P1_SH
       run: |
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
         chmod +x $DIY_P1_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P1_SH
-
-    - name: Updata & install feeds
-      working-directory: ./openwrt
+        
+    - name: 更新 & 安装 feeds
       run: |
+        cd openwrt
         ./scripts/feeds update -a
+        ./scripts/feeds install -a
         rm -rf feeds/packages/lang/golang
         git clone https://github.com/sbwml/packages_lang_golang -b 23.x feeds/packages/lang/golang
         ./scripts/feeds install -a
-        ./scripts/feeds install -a
-
-    - name: Load custom configuration
+        ./scripts/feeds install -a        
+        
+    - name: 加载config & DIY_P2_SH
       run: |
-        [ -e files ] && mv files openwrt/files
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
         chmod +x $DIY_P2_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
-
-#    - name: Send Authorized
-#      working-directory: ./openwrt
-#      env:
-#        ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-#        OP_SSH_PW: ${{ secrets.SSH_AUTHORIZED_PASSWORD }}
-#        PPPOE_USERNAME1: ${{ secrets.PPPOE_CU_USERNAME }}
-#        PPPOE_PASSWORD1: ${{ secrets.PPPOE_CU_PASSWORD }}
-#      run: |
-#        sed -i 's/root:::0:99999:7:::/root:${{ secrets.SSH_AUTHORIZED_PASSWORD }}:0:0:99999:7:::/g' package/base-files/files/etc/shadow
-#        sed -i 's/pppoe_username/${{ secrets.PPPOE_CU_USERNAME }}/g' package/base-files/files/etc/uci-defaults/zzz-updata-settings
-#        sed -i 's/pppoe_password/${{ secrets.PPPOE_CU_PASSWORD }}/g' package/base-files/files/etc/uci-defaults/zzz-updata-settings        
-#        git clone --branch main https://${{ secrets.ACCESS_TOKEN }}:x-oauth-basic@github.com/0xACE8/openwrt-data.git package/base-files/files/etc/backup
-
         
-    - name: SSH connection to Actions
+    - name: SSH链接管理
       uses: P3TERX/ssh2actions@v1.0.0
       if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
       env:
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-
-    - name: Download package
+        
+    - name: 下载安装包
       id: package
       run: |
         cd openwrt
@@ -152,8 +143,8 @@ jobs:
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
-
-    - name: Compile the firmware
+        
+    - name: 编译固件
       id: compile
       run: |
         cd openwrt
@@ -163,31 +154,18 @@ jobs:
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
-
-    - name: send telegram message on push
-      if: steps.compile.outputs.status != 'success' && !cancelled()
-      env:
-        to: ${{ secrets.TELEGRAM_CHAT_ID }}
-        token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-      run: |
-        curl -i -X GET "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage?chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&format=markdown&text=⛔%20固件编译失败!%20⛔%0A目标用户:%200xACE8%0A资源仓库:%20${{ github.repository }}"
-
-    - name: Check space usage
+        
+    - name: 查看磁盘使用情况
       if: (!cancelled())
       run: df -hT
-
-    - name: Upload bin directory
-      uses: actions/upload-artifact@main
-      if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
-      with:
-        name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
-        path: openwrt/bin
-
-    - name: Organize files
+      
+    - name: 整理文件并重命名
       id: organize
       if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
-      run: |
+      run: | 
         cd openwrt/bin/targets/*/*
+        rm -rf packages
+        sudo -E apt-get -qq install rename
         rm -rf packages
         rm -rf *.buildinfo
         rm -rf *kernel.bin
@@ -196,15 +174,75 @@ jobs:
         rm -rf profiles.json
         rm -rf *.manifest
         rm -rf sha256sums
+        rename 's/immortalwrt-mediatek/padavanonly_2305_laoliu/' *        
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
-
-    - name: Upload firmware directory
+        
+    - name: 打包上传固件到Actions Artifacts
       uses: actions/upload-artifact@main
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
-        name: PadavanOnly_2305_laoliu${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+        name: padavanonly_2305_laoliu${{ env.DEVICE_NAME }}_512mb${{ env.FILE_DATE }}
         path: ${{ env.FIRMWARE }}
+        
+    - name: 生成固件Release标签
+      id: tag
+      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      run: |
+        touch release.txt
+        echo "- 使用源码：${{ env.REPO_URL }}" >> release.txt
+        echo "- 登录地址：${{ env.IP_ADDR }}" >> release.txt
+        if [[ "${{ env.MAC_FIX }}" == '-MAC_fix' ]]; then
+               echo "- 修改源码 使用原厂的MAC地址顺序" >> release.txt
+        else
+               echo "- 未修改源码中的MAC地址顺序" >> release.txt
+        fi
+        if [[ "${{ env.SET_GSW }}" == '-gsw' ]]; then
+               echo "- 使用GSW交换机驱动（非DSA）" >> release.txt
+        else
+               echo "- 使用DSA交换机驱动" >> release.txt
+        fi
+        if [[ "${{ env.WIFI_INTERFACE }}" == '-mtwifi' ]]; then
+                echo "- 使用 hanwckf mtwifi-cfg 原生luci无线控制界面" >> release.txt
+        else
+                echo "- 使用 mtk-sdk luci-app-mtk 无线控制界面" >> release.txt
+        fi
+        if [[ "${{ env.BUILD_DOCKERMAN }}" == '-docker' ]]; then
+                echo "- 已编译luci-app-dockerman" >> release.txt
+        else
+                echo "- 未编译luci-app-dockerman" >> release.txt
+        fi
+        echo "release_tag=${{ env.FILE_DATE }}-${{ env.OPENWRT_NAME }}-${{ env.DEVICE_NAME }}${{ env.SET_GSW }}${{ env.WIFI_INTERFACE }}${{ env.BUILD_DOCKERMAN }}" >> $GITHUB_OUTPUT
+        echo "status=success" >> $GITHUB_OUTPUT
+
+    - name: Upload firmware to cowtransfer
+      id: cowtransfer
+      if: steps.organize.outputs.status == 'success' && env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
+      run: |
+        curl -fsSL git.io/file-transfer | sh
+        ./transfer cow --block 2621440 -s -p 64 --no-progress ${FIRMWARE} 2>&1 | tee cowtransfer.log
+        echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
+        echo "url=$(cat cowtransfer.log | grep https | cut -f3 -d" ")" >> $GITHUB_OUTPUT
+
+    - name: Upload firmware to WeTransfer
+      id: wetransfer
+      if: steps.organize.outputs.status == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()
+      run: |
+        curl -fsSL git.io/file-transfer | sh
+        ./transfer wet -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wetransfer.log
+        echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
+        echo "url=$(cat wetransfer.log | grep https | cut -f3 -d" ")" >> $GITHUB_OUTPUT
+  
+    - name: 发布固件至Release
+      uses: softprops/action-gh-release@v1
+      if: steps.tag.outputs.status == 'success' && !cancelled()
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        files: ${{ env.FIRMWARE }}/*
+        name: PadavanOnly_2305_laoliu${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+        tag_name: ${{ steps.tag.outputs.release_tag }}
+        body_path: release.txt
 
     - name: Telegram notification
       if: steps.compile.outputs.status == 'success' && !cancelled()
