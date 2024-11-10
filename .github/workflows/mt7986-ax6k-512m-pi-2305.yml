@@ -20,6 +20,9 @@ on:
         default: 'false'
   schedule:
     - cron: 00 21 * * 1
+  push:
+    tags:
+    - 'v*'    
 
 env:
   REPO_URL: https://github.com/padavanonly/immortalwrt-mt798x-23.05
@@ -28,13 +31,14 @@ env:
   CONFIG_FILE: redmi_ax6000/ax6000-2305.conf
   DIY_P1_SH: redmi_ax6000/d1y-p4r71.sh
   DIY_P2_SH: redmi_ax6000/d1y-p4r72.sh
-
+  RELEASE_TAG: ax6000
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
-  UPLOAD_COWTRANSFER: true
-  UPLOAD_WETRANSFER: false
-  UPLOAD_RELEASE: false
-  TZ: Asia/Shanghai
+  UPLOAD_TRSRANSFER: false
+  UPLOAD_GGRANSFER: false
+  UPLOAD_WSSRANSFER: true
+  UPLOAD_RELEASE: true
+  TZ: "America/Los_Angeles"
 
 
 jobs:
@@ -217,23 +221,43 @@ jobs:
         echo "release_tag=${{ env.FILE_DATE }}-${{ env.OPENWRT_NAME }}-${{ env.DEVICE_NAME }}${{ env.SET_GSW }}${{ env.WIFI_INTERFACE }}${{ env.BUILD_DOCKERMAN }}" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
-    - name: Upload firmware to cowtransfer
-      id: cowtransfer
-      if: steps.organize.outputs.status == 'success' && env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
+    - name: Upload firmware to Transfer
+      id: Transfer
+      if: steps.organize.outputs.status == 'success' && env.UPLOAD_TRSRANSFER == 'true' && !cancelled()
       run: |
         curl -fsSL git.io/file-transfer | sh
-        ./transfer cow --block 2621440 -s -p 64 --no-progress ${FIRMWARE} 2>&1 | tee cowtransfer.log
-        echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
-        echo "url=$(cat cowtransfer.log | grep https | cut -f3 -d" ")" >> $GITHUB_OUTPUT
+        ./transfer trs -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee trsransfer.log
+        echo "::warning file=trsransfer.com::$(cat trsransfer.log | grep https)"
+        echo "url=$(cat trsransfer.log | grep https | cut -f3 -d" ")" >> $GITHUB_OUTPUT
+        
+    - name: Upload firmware to DownloadGG
+      id: DownloadGG
+      if: steps.organize.outputs.status == 'success' && env.UPLOAD_GGRANSFER == 'true' && !cancelled()
+      run: |
+        curl -fsSL git.io/file-transfer | sh
+        ./transfer gg -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee ggransfer.log
+        echo "::warning file=ggransfer.com::$(cat ggransfer.log | grep https)"
+        echo "url=$(cat ggransfer.log | grep https | cut -f3 -d" ")" >> $GITHUB_OUTPUT
+        
+    - name: Upload firmware to Wenshushu
+      id: wenshushu
+      if: steps.organize.outputs.status == 'success' && env.UPLOAD_WSSRANSFER == 'true' && !cancelled()
+      run: |
+        curl -fsSL git.io/file-transfer | sh
+        ./transfer wss -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wssransfer.log
+        echo "::warning file=wssransfer.com::$(cat wssransfer.log | grep https)"
+        echo "url=$(cat wssransfer.log | grep https | cut -f3 -d" ")" >> $GITHUB_OUTPUT
 
-    - name: Upload firmware to WeTransfer
-      id: wetransfer
-      if: steps.organize.outputs.status == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()
+    - name: Generate release tag
+      id: tag
+      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
-        curl -fsSL git.io/file-transfer | sh
-        ./transfer wet -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wetransfer.log
-        echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
-        echo "url=$(cat wetransfer.log | grep https | cut -f3 -d" ")" >> $GITHUB_OUTPUT
+        echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
+        touch release.txt
+        [ $UPLOAD_COWTRANSFER = true ] && echo "🔗 [Cowtransfer](${{ steps.cowtransfer.outputs.url }})" >> release.txt
+        [ $UPLOAD_WETRANSFER = true ] && echo "🔗 [WeTransfer](${{ steps.wetransfer.outputs.url }})" >> release.txt
+        [ $UPLOAD_WSSRANSFER = true ] && echo "🔗 [WeTransfer](${{ steps.wssransfer.outputs.url }})" >> release.txt
+        echo "status=success" >> $GITHUB_OUTPUT
   
     - name: 发布固件至Release
       uses: softprops/action-gh-release@v1
