@@ -31,10 +31,11 @@ env:
 
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
-  UPLOAD_COWTRANSFER: true
+  UPLOAD_COWTRANSFER: false
   UPLOAD_WETRANSFER: false
+  UPLOAD_WENSHUSHU: true
   UPLOAD_RELEASE: false
-  TZ: Asia/Shanghai
+  TZ: "America/Los_Angeles"
 
 
 jobs:
@@ -232,6 +233,17 @@ jobs:
         ./transfer wet -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wetransfer.log
         echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
         echo "url=$(cat wetransfer.log | grep https | cut -f3 -d" ")" >> $GITHUB_OUTPUT
+
+    - name: Upload firmware to WenShuShu
+      id: WenShuShu
+      if: steps.organize.outputs.status == 'success' && env.UPLOAD_WENSHUSHU == 'true' && !cancelled()
+      run: |
+        cd openwrt
+        curl -fsSL git.io/file-transfer | sh
+        ./transfer wss -s -p 16 --no-progress ${{ env.FILE_NAME }} | tee wenshushu.log
+        echo "::warning file=wenshushu.cn::$(cat wenshushu.log | grep https)" 
+        message=$(cat wenshushu.log | grep https | cut -f3 -d' ')
+        echo "$message" >> $GITHUB_OUTPUT
   
     - name: 发布固件至Release
       uses: softprops/action-gh-release@v1
@@ -240,7 +252,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         files: ${{ env.FIRMWARE }}/*
-        name: PadavanOnly_2305_laoliu${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+        name: padavanonly-2305-laoliu-mt7981-xr30-emmc-sysupgrade${{ env.FILE_DATE }}
         tag_name: ${{ steps.tag.outputs.release_tag }}
         body_path: release.txt
 
@@ -250,6 +262,6 @@ jobs:
         to: ${{ secrets.TELEGRAM_CHAT_ID }}
         token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       run: |
-        curl -i -X GET "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage?chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&format=markdown&text=✅%20固件顺利编译完成!%20✅%0A目标用户:%200xACE8%0A资源仓库:%20${{ github.repository }}%0A固件名称:%20PadavanOnly_2305_laoliu${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}"
+        curl -i -X GET "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage?chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&format=markdown&text=✅%20固件顺利编译完成!%20✅%0A目标用户:%200xACE8%0A资源仓库:%20${{ github.repository }}%0A固件名称:%20padavanonly-2305-laoliu-mt7981-xr30-emmc-sysupgrade${{ env.FILE_DATE }}"
 
         
