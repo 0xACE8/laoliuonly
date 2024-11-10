@@ -21,7 +21,7 @@ on:
   schedule:
     - cron: 00 21 * * 1
   push:
-    tag:
+    tags:
     - 'v*'    
 
 env:
@@ -249,7 +249,7 @@ jobs:
         echo "url=$(cat wssransfer.log | grep https | cut -f3 -d" ")" >> $GITHUB_OUTPUT
 
     - name: Generate release tag
-      id: tag
+      id: tags
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
