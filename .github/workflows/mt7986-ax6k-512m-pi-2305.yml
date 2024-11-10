@@ -36,7 +36,7 @@ env:
   UPLOAD_FIRMWARE: true
   UPLOAD_TRSRANSFER: false
   UPLOAD_GGRANSFER: false
-  UPLOAD_WSSRANSFER: true
+  UPLOAD_WENSHUSHU: true
   UPLOAD_RELEASE: false
   TZ: "America/Los_Angeles"
 
@@ -239,14 +239,14 @@ jobs:
         echo "::warning file=ggransfer.com::$(cat ggransfer.log | grep https)"
         echo "url=$(cat ggransfer.log | grep https | cut -f3 -d" ")" >> $GITHUB_OUTPUT
         
-    - name: Upload firmware to Wenshushu
+    - name: Upload firmware to WenShuShu
       id: wenshushu
-      if: steps.organize.outputs.status == 'success' && env.UPLOAD_WSSRANSFER == 'true' && !cancelled()
+      if: steps.organize.outputs.status == 'success' && env.UPLOAD_WENSHUSHU == 'true' && !cancelled()
       run: |
         curl -fsSL git.io/file-transfer | sh
-        ./transfer wss -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wssransfer.log
-        echo "::warning file=wssransfer.com::$(cat wssransfer.log | grep https)"
-        echo "url=$(cat wssransfer.log | grep https | cut -f3 -d" ")" >> $GITHUB_OUTPUT
+        ./transfer wss -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wenshushu.log
+        echo "::warning file=wenshushu.cn::$(cat wenshushu.log | grep https)"
+        echo "url=$(cat wenshushu.log | grep https | cut -f3 -d" ")" >> $GITHUB_OUTPUT
 
     - name: Generate release tag
       id: tags
