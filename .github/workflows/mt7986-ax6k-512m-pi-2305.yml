@@ -21,7 +21,7 @@ on:
   schedule:
     - cron: 00 21 * * 1
   push:
-    tags:
+    tag:
     - 'v*'    
 
 env:
