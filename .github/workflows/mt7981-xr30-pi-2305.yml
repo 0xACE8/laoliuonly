@@ -8,7 +8,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: laoliu mt7981 cmcc xr30 23.05 Atcions
+name: laoliu mt7981 xr30 23.05 Atcions
 
 on:
   repository_dispatch:
