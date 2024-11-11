@@ -221,44 +221,16 @@ jobs:
         echo "release_tag=${{ env.FILE_DATE }}-${{ env.OPENWRT_NAME }}-${{ env.DEVICE_NAME }}${{ env.SET_GSW }}${{ env.WIFI_INTERFACE }}${{ env.BUILD_DOCKERMAN }}" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
-    - name: Upload firmware to Transfer
-      id: Transfer
-      if: steps.organize.outputs.status == 'success' && env.UPLOAD_TRSRANSFER == 'true' && !cancelled()
-      run: |
-        curl -fsSL git.io/file-transfer | sh
-        ./transfer trs -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee trsransfer.log
-        echo "::warning file=trsransfer.com::$(cat trsransfer.log | grep https)"
-        echo "url=$(cat trsransfer.log | grep https | cut -f3 -d" ")" >> $GITHUB_OUTPUT
-        
-    - name: Upload firmware to DownloadGG
-      id: DownloadGG
-      if: steps.organize.outputs.status == 'success' && env.UPLOAD_GGRANSFER == 'true' && !cancelled()
-      run: |
-        curl -fsSL git.io/file-transfer | sh
-        ./transfer gg -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee ggransfer.log
-        echo "::warning file=ggransfer.com::$(cat ggransfer.log | grep https)"
-        echo "url=$(cat ggransfer.log | grep https | cut -f3 -d" ")" >> $GITHUB_OUTPUT
-        
     - name: Upload firmware to WenShuShu
-      id: wenshushu
+      id: WenShuShu
       # if: steps.organize.outputs.status == 'success' && env.UPLOAD_WENSHUSHU == 'true' && !cancelled()
       run: |
+        cd openwrt
         curl -fsSL git.io/file-transfer | sh
         ./transfer wss -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wenshushu.log
-        echo "::warning file=wenshushu.cn::$(cat wenshushu.log | grep https)" >> $GITHUB_OUTPUT
-  #      echo "url=$(cat wenshushu.log | grep https | cut -f3 -d" ")" >> $GITHUB_OUTPUT
+        echo "::warning file=wenshushu.cn::$(cat wenshushu.log | grep https)"
+#        echo "url=$(cat wenshushu.log | grep https | cut -f3 -d" ")" >> $GITHUB_OUTPUT
 
-    - name: Generate release tag
-      id: tags
-      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
-      run: |
-        echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
-        touch release.txt
-        [ $UPLOAD_COWTRANSFER = true ] && echo "🔗 [Cowtransfer](${{ steps.cowtransfer.outputs.url }})" >> release.txt
-        [ $UPLOAD_WETRANSFER = true ] && echo "🔗 [WeTransfer](${{ steps.wetransfer.outputs.url }})" >> release.txt
-        [ $UPLOAD_WSSRANSFER = true ] && echo "🔗 [Wssransfer](${{ steps.wssransfer.outputs.url }})" >> release.txt
-        echo "status=success" >> $GITHUB_OUTPUT
-  
     - name: 发布固件至Release
       uses: softprops/action-gh-release@v1
       if: steps.tag.outputs.status == 'success' && !cancelled()
