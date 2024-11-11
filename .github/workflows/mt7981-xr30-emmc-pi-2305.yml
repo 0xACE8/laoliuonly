@@ -241,7 +241,7 @@ jobs:
         cd openwrt
         curl -fsSL git.io/file-transfer | sh
         ./transfer wss -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wenshushu.log
-        echo "::warning file=wenshushu.cn::$(cat wenshushu.log | grep https)" >> $GITHUB_OUTPUT
+        echo "::warning file=wenshushu.cn::$(cat wenshushu.log | grep https)"
 #        echo "url=$(cat wenshushu.log | grep https | cut -f3 -d" ")" >> $GITHUB_OUTPUT
   
     - name: 发布固件至Release
