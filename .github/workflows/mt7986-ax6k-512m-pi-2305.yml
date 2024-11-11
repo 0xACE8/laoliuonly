@@ -20,9 +20,6 @@ on:
         default: 'false'
   schedule:
     - cron: 00 21 * * 1
-  push:
-    tags:
-    - 'v*'    
 
 env:
   REPO_URL: https://github.com/padavanonly/immortalwrt-mt798x-23.05
