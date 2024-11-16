@@ -179,13 +179,13 @@ jobs:
         rm -rf sha256sums
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
-#        rename 's/immortalwrt-mediatek-mt7986-xiaomi_redmi-router-ax6000-squashfs-sysupgrade/padavanonly-2305-laoliu-mt7986-redmi-ax6000-sysupgrade/' *
+        rename 's/immortalwrt-mediatek-mt7986-jdcloud_re-cp-03-squashfs-sysupgrade/padavanonly-2305-laoliu-mt7986-jdcloud_re-cp-03-sysupgrade/' *
         
     - name: 打包上传固件到Actions Artifacts
       uses: actions/upload-artifact@main
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
-        name: padavanonly_2305_laoliu${{ env.DEVICE_NAME }}_512mb${{ env.FILE_DATE }}
+        name: padavanonly-2305-laoliu-mt7986-jdcloud_re-cp-03-sysupgrade${{ env.FILE_DATE }}
         path: ${{ env.FIRMWARE }}
         
     - name: 生成固件Release标签
@@ -235,7 +235,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         files: ${{ env.FIRMWARE }}/*
-        name: padavanonly_2305_laoliu${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+        name: padavanonly-2305-laoliu-mt7986-jdcloud_re-cp-03-sysupgrade${{ env.FILE_DATE }}
         tag_name: ${{ steps.tag.outputs.release_tag }}
         body_path: release.txt
 
@@ -245,6 +245,6 @@ jobs:
         to: ${{ secrets.TELEGRAM_CHAT_ID }}
         token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       run: |
-        curl -i -X GET "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage?chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&format=markdown&text=✅%20固件顺利编译完成!%20✅%0A目标用户:%200xACE8%0A资源仓库:%20${{ github.repository }}%0A固件名称:%20padavanonly_2305_laoliu${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}"
+        curl -i -X GET "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage?chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&format=markdown&text=✅%20固件顺利编译完成!%20✅%0A目标用户:%200xACE8%0A资源仓库:%20${{ github.repository }}%0A固件名称:%20padavanonly-2305-laoliu-mt7986-jdcloud_re-cp-03-sysupgrade${{ env.FILE_DATE }}${{ env.FILE_DATE }}"
 
         
