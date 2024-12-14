@@ -11,6 +11,7 @@ sed -i "s/globals.ula_prefix='auto'/globals.packet_steering='1'/g" package/base-
 
 # Modify Hostname
 sed -i 's/LEDE/Redmi_AX6000/g' package/base-files/luci2/bin/config_generate
+sed -i 's/LEDE/Wifi-01/g' package/kernel/mac80211/files/lib/wifi/mac80211.sh
 
 # Change language=auto to zh_cn & Change ash to bash
 sed -i 's/ash/bash/g' package/base-files/files/etc/passwd
