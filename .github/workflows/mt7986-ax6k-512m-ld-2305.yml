@@ -25,7 +25,7 @@ env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
   FEEDS_CONF: redmi_ax6000/l3d3/f33d5.c0nf.d3f4ult
-  CONFIG_FILE: redmi_ax6000/l3d3/ax6klede.c0nf
+  CONFIG_FILE: redmi_ax6000/l3d3/ax6000-l3d3.conf
   DIY_P1_SH: redmi_ax6000/l3d3/d1y-p4r71.sh
   DIY_P2_SH: redmi_ax6000/l3d3/d1y-p4r72.sh
   UPLOAD_BIN_DIR: false
