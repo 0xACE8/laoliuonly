@@ -5,15 +5,11 @@
 # Author: 0xACE7
 #=================================================
 # Modify default IP
-#sed -i 's/192.168.1.1/192.168.6.1/g' package/base-files/files/bin/config_generate
 sed -i 's/192.168.1.1/192.168.6.1/g' package/base-files/luci2/bin/config_generate
-#sed -i "s/ip6assign='60'/ip6assign='64'/g" package/base-files/files/bin/config_generate
 sed -i "s/ip6assign='60'/ip6assign='64'/g" package/base-files/luci2/bin/config_generate
-#sed -i "s/globals.ula_prefix='auto'/globals.packet_steering='1'/g" package/base-files/files/bin/config_generate
 sed -i "s/globals.ula_prefix='auto'/globals.packet_steering='1'/g" package/base-files/luci2/bin/config_generate
 
 # Modify Hostname
-#sed -i 's/LEDE/Redmi_AX6000/g' package/base-files/files/bin/config_generate
 sed -i 's/LEDE/Redmi_AX6000/g' package/base-files/luci2/bin/config_generate
 
 # Change language=auto to zh_cn & Change ash to bash
@@ -41,7 +37,7 @@ sed -i 's/"终端"/"TTYD 终端"/g' feeds/luci/applications/luci-app-ttyd/po/zh_
 sed -i '4 i\\t\t"order": 89,' feeds/luci/applications/luci-app-ttyd/root/usr/share/luci/menu.d/luci-app-ttyd.json
 
 # change navbar 'VPN' to 'NAT'
-#sed -i 's/msgstr "VPN"/msgstr "NAT"/g' feeds/luci/modules/luci-base/po/zh_Hans/base.po
+sed -i 's/Turbo ACC 网络加速\"/网络加速\"/g' feeds/luci/applications/luci-app-turboacc/po/zh-cn/turboacc.po
 sed -i 's/20/0/g' package/network/services/uhttpd/files/uhttpd.config
 sed -i 's/3600/0/g' feeds/luci/modules/luci-base/root/etc/config/luci
 
