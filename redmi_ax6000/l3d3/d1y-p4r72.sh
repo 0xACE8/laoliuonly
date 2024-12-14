@@ -46,9 +46,9 @@ sed -i 's/20/0/g' package/network/services/uhttpd/files/uhttpd.config
 sed -i 's/3600/0/g' feeds/luci/modules/luci-base/root/etc/config/luci
 
 # change upnp
-sed -i 's/services/network/g' feeds/luci/applications/luci-app-upnp/luasrc/controller/upnp.lua
-#sed -i '4 i\\t\t"order": 40,' feeds/luci/applications/luci-app-upnp/root/usr/share/luci/menu.d/luci-app-upnp.json
-sed -i 's/msgstr \"UPnP\msgstr \"UPnP\/NAT\"/g' feeds/luci/applications/luci-app-upnp/po/zh-cn/upnp.po
+sed -i 's/services/network/g' feeds/luci/applications/luci-app-upnp/root/usr/share/luci/menu.d/luci-app-upnp.json
+sed -i '4 i\\t\t"order": 40,' feeds/luci/applications/luci-app-upnp/root/usr/share/luci/menu.d/luci-app-upnp.json
+sed -i 's/msgstr \"UPnP\"/msgstr \"UPnP\/NAT\"/g' feeds/luci/applications/luci-app-upnp/po/zh_Hans/upnp.po
 
 # Change to my banner
 sed -i 's/\[ \-f \/etc\/banner \] \&\& cat \/etc\/banner/\[ \-f \/etc\/banner \] \&\& cat \/etc\/banner \| lolcat \-h 0.30 \-r \-b/g' package/base-files/files/etc/profile
