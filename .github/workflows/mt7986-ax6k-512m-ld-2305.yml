@@ -8,7 +8,7 @@
 # Description: Build using GitHub Actions
 #
 
-name: Build laoliu mt7986 ax6k 512m 23.05 l3d3 Atcions
+name: Build mt7986 ax6k 512m 23.05 l3d3 Atcions
 
 on:
   repository_dispatch:
