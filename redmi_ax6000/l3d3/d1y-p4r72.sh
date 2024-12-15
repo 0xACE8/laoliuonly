@@ -38,7 +38,7 @@ sed -i 's/"终端"/"TTYD 终端"/g' feeds/luci/applications/luci-app-ttyd/po/zh_
 sed -i '4 i\\t\t"order": 89,' feeds/luci/applications/luci-app-ttyd/root/usr/share/luci/menu.d/luci-app-ttyd.json
 
 # change navbar 'VPN' to 'NAT'
-sed -i 's/Turbo ACC 网络加速\"/网络加速\"/g' feeds/luci/applications/luci-app-turboacc/po/zh-cn/turboacc.po
+sed -i 's/Turbo ACC 网络加速\"/网络加速\"/g' feeds/luci/applications/luci-app-turboacc/po/zh_Hans/turboacc.po
 sed -i 's/20/0/g' package/network/services/uhttpd/files/uhttpd.config
 sed -i 's/3600/0/g' feeds/luci/modules/luci-base/root/etc/config/luci
 
