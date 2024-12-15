@@ -59,6 +59,7 @@ sed -i 's/#483d8b/#ff6900/g' feeds/ace8/luci-theme-argon/htdocs/luci-static/argo
 sed -i 's/#483d8b/#ff6900/g' feeds/ace8/luci-theme-argon/htdocs/luci-static/argon/css/dark.css
 
 # upgrade config
+wget --no-check-certificate -O package/base-files/files/etc/uci-defaults/zzz-updata-settings-ll "https://raw.githubusercontent.com/0xACE8/laoliuonly/refs/heads/main/redmi_ax6000/l3d3/zzz-updata-settings"
 wget --no-check-certificate -O feeds/packages/utils/bash/files/etc/profile.d/30-sysinfo.sh "https://raw.githubusercontent.com/0xACE8/0p3nwrt-general/refs/heads/main/30-sysinfo.sh"
 wget --no-check-certificate -O feeds/packages/utils/bash/files/etc/profile.d/50-cloud.sh "https://raw.githubusercontent.com/0xACE8/0p3nwrt-general/main/50-cloud.sh"
 
