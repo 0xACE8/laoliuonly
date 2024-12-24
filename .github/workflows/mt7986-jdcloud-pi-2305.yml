@@ -48,6 +48,8 @@ jobs:
     steps:
     - name: 检查项目分支
       uses: actions/checkout@main
+      with:
+        fetch-depth: 0      
       
     - name: Free Disk Space (Ubuntu)
       uses: jlumbroso/free-disk-space@main
@@ -101,15 +103,19 @@ jobs:
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
     - name: Cache
-      uses: stupidloud/cachewrtbuild@main
+      uses: klever1988/cachewrtbuild@main
       with:
         ccache: 'true'
+        toolchain: 'true'
+        skip: 'true'
+        clean: 'false'
         mixkey: 'ax6000pi2305'
-        prefix: 'openwrt'
+        prefix: '${{ github.workspace }}/openwrt'
         
     - name: 加载feeds.conf.default & DIY_P1_SH
       run: |
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
+        echo -e 'CONFIG_CCACHE=y' >> openwrt/.config        
         chmod +x $DIY_P1_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P1_SH
