@@ -103,14 +103,21 @@ jobs:
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
     - name: Cache
-      uses: klever1988/cachewrtbuild@main
+      uses: stupidloud/cachewrtbuild@main
       with:
-        ccache: 'false'
-        toolchain: 'false'
-        skip: 'true'
-        clean: 'false'
+        ccache: 'true'
         mixkey: 'anna2305'
-        prefix: '${{ github.workspace }}/openwrt'
+        prefix: 'openwrt'
+
+#    - name: Cache
+#      uses: klever1988/cachewrtbuild@main
+#      with:
+#        ccache: 'false'
+#        toolchain: 'false'
+#        skip: 'true'
+#        clean: 'false'
+#        mixkey: 'anna2305'
+#        prefix: '${{ github.workspace }}/openwrt'
         
     - name: 加载feeds.conf.default & DIY_P1_SH
       run: |
