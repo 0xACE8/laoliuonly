@@ -106,10 +106,10 @@ jobs:
       uses: klever1988/cachewrtbuild@main
       with:
         ccache: 'false'
-        toolchain: 'true'
+        toolchain: 'false'
         skip: 'true'
         clean: 'false'
-        mixkey: 'ax6000pi2305'
+        mixkey: 'anna2305'
         prefix: '${{ github.workspace }}/openwrt'
         
     - name: 加载feeds.conf.default & DIY_P1_SH
