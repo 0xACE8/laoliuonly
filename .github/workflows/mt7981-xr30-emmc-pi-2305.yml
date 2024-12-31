@@ -112,8 +112,8 @@ jobs:
     - name: Cache
       uses: klever1988/cachewrtbuild@main
       with:
-        ccache: 'false'
-        toolchain: 'false'
+        ccache: 'true'
+        toolchain: 'true'
         skip: 'true'
         clean: 'false'
         mixkey: 'anna2305'
