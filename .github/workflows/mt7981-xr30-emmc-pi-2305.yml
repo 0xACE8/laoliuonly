@@ -19,7 +19,7 @@ on:
         required: false
         default: 'false'
   schedule:
-    - cron: 00 17 * * 0
+    - cron: 00 23 * * 0
 
 env:
   REPO_URL: https://github.com/0xACE8/p4d4v4n0nly-xr30
