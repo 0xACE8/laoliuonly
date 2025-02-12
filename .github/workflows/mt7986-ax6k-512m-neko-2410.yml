@@ -25,7 +25,7 @@ env:
   REPO_URL: https://github.com/NekokeCore/immortalwrt-mt798x-24.10
   REPO_BRANCH: openwrt-24.10
   FEEDS_CONF: f33d5.c0nf.d3f4ult.2410
-  CONFIG_FILE: redmi_ax6000/ax6000-2305.conf
+  CONFIG_FILE: redmi_ax6000/ax6000-2410.conf
   DIY_P1_SH: redmi_ax6000/d1y-p4r71.sh
   DIY_P2_SH: redmi_ax6000/d1y-p4r72.sh
   RELEASE_TAG: ax6000
@@ -182,7 +182,7 @@ jobs:
         rm -rf profiles.json
         rm -rf *.manifest
         rm -rf sha256sums
-        rename 's/immortalwrt-mediatek-mt7986-xiaomi_redmi-router-ax6000-squashfs-sysupgrade/padavanonly-2305-laoliu-512m-mt7986-redmi-ax6000-sysupgrade/' *
+        rename 's/immortalwrt-mediatek-mt7986-xiaomi_redmi-router-ax6000-squashfs-sysupgrade/nekokecore-2410-laoliu-512m-mt7986a-redmi-ax6000-sysupgrade/' *
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
         
@@ -190,7 +190,7 @@ jobs:
       uses: actions/upload-artifact@main
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
-        name: padavanonly_2305_laoliu${{ env.DEVICE_NAME }}_512mb${{ env.FILE_DATE }}
+        name: nekokecore_2410_laoliu${{ env.DEVICE_NAME }}_512mb${{ env.FILE_DATE }}
         path: ${{ env.FIRMWARE }}
         
     - name: 生成固件Release标签
@@ -240,7 +240,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         files: ${{ env.FIRMWARE }}/*
-        name: padavanonly_2305_laoliu${{ env.DEVICE_NAME }}_512m${{ env.FILE_DATE }}
+        name: nekokecore_2410_laoliu${{ env.DEVICE_NAME }}_512m${{ env.FILE_DATE }}
         tag_name: ${{ steps.tag.outputs.release_tag }}
         body_path: release.txt
 
@@ -250,6 +250,6 @@ jobs:
         to: ${{ secrets.TELEGRAM_CHAT_ID }}
         token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       run: |
-        curl -i -X GET "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage?chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&format=markdown&text=✅%20固件顺利编译完成!%20✅%0A目标用户:%200xACE8%0A资源仓库:%20${{ github.repository }}%0A固件名称:%20padavanonly_2305_laoliu${{ env.DEVICE_NAME }}_512m${{ env.FILE_DATE }}"
+        curl -i -X GET "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage?chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&format=markdown&text=✅%20固件顺利编译完成!%20✅%0A目标用户:%200xACE8%0A资源仓库:%20${{ github.repository }}%0A目标设备:%20${{ env.DEVICE_NAME }}%0A固件名称:%20nekokecore-2410_laoliu${{ env.DEVICE_NAME }}_512m${{ env.FILE_DATE }}"
 
         
