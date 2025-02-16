@@ -28,6 +28,8 @@ sed -i '4 i\\t\t"order": 89,' feeds/luci/applications/luci-app-ttyd/root/usr/sha
 
 sed -e '/procd_set_param respawn/,+19d' package/network/services/dnsmasq/files/dnsmasq.init
 
+sed -i 's/Xiaomi Redmi Router AX6000/Xiaomi Redmi Router AX6000 (U-BootMod 512MB SPI NAND)/g' target/linux/mediatek/files-5.4/arch/arm64/boot/dts/mediatek/mt7986a-xiaomi-redmi-router-ax6000.dtsi
+
 sed -i 's/\[ \-f \/etc\/banner \] \&\& cat \/etc\/banner/\[ \-f \/etc\/banner \] \&\& cat \/etc\/banner \| lolcat \-h 0.30 \-r \-b/g' package/base-files/files/etc/profile
 rm -rf package/base-files/files/etc/banner
 wget --no-check-certificate -O package/base-files/files/etc/banner "https://raw.githubusercontent.com/0xACE8/laoliuonly/main/redmi_ax6000/banner"
