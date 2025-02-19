@@ -187,7 +187,7 @@ jobs:
         rm -rf profiles.json
         rm -rf *.manifest
         rm -rf sha256sums
-        rename 's/immortalwrt-mediatek-mt7981-cmcc_xr30-emmc-squashfs-sysupgrade/padavanonly-2305-laoliu-mt7981-xr30-emmc-sysupgrade/' *        
+        rename 's/immortalwrt-mediatek-mt7981-cmcc_xr30-emmc-squashfs-sysupgrade/annawrt-2305-laoliu-mt7981-xr30-emmc-sysupgrade/' *        
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
         
