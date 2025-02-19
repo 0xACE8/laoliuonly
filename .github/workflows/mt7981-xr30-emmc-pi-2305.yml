@@ -169,7 +169,15 @@ jobs:
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
-        
+
+    - name: send telegram message on push
+      if: steps.compile.outputs.status != 'success' && !cancelled()
+      env:
+        to: ${{ secrets.TELEGRAM_CHAT_ID }}
+        token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      run: |
+        curl -i -X GET "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage?chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&format=markdown&text=⛔%20固件编译失败!%20⛔%0A目标用户:%200xACE8%0A资源仓库:%20${{ github.repository }}%0A支持设备:%20CMCC-XR30 eMMC%0A固件名称:%20annawrt-2305-laoliu-mt7981-cmcc_xr30-emmc-sysupgrade${{ env.FILE_DATE }}"
+
     - name: 查看磁盘使用情况
       if: (!cancelled())
       run: df -hT
@@ -195,7 +203,7 @@ jobs:
       uses: actions/upload-artifact@main
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
-        name: padavanonly_2305_laoliu${{ env.DEVICE_NAME }}_512mb${{ env.FILE_DATE }}
+        name: annawrt_2305_laoliu${{ env.DEVICE_NAME }}_512mb${{ env.FILE_DATE }}
         path: ${{ env.FIRMWARE }}
         
     - name: 生成固件Release标签
@@ -273,6 +281,11 @@ jobs:
         to: ${{ secrets.TELEGRAM_CHAT_ID }}
         token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       run: |
-        curl -i -X GET "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage?chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&format=markdown&text=✅%20固件顺利编译完成!%20✅%0A目标用户:%200xACE8%0A目标设备:%20CMCC-XR30%0A资源仓库:%20${{ github.repository }}%0A固件名称:%20annawrt-2305-laoliu-mt7981-xr30-emmc-sysupgrade${{ env.FILE_DATE }}"
+        curl -i -X GET "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage?chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&format=markdown&text=✅%20固件顺利编译完成!%20✅%0A目标用户:%200xACE8%0A资源仓库:%20${{ github.repository }}%0A支持设备:%20CMCC-XR30 eMMC%0A固件名称:%20annawrt-2305-laoliu-mt7981-xr30-emmc-sysupgrade${{ env.FILE_DATE }}"
 
-        
+    - name: Delete workflow runs
+      uses: Mattraks/delete-workflow-runs@main
+      with:
+        retain_days: 1
+        keep_minimum_runs: 1
+
