@@ -263,7 +263,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         files: ${{ env.FIRMWARE }}/*
-        name: padavanonly-2305-laoliu-mt7981-xr30-emmc-sysupgrade${{ env.FILE_DATE }}
+        name: annawrt-2305-laoliu-mt7981-xr30-emmc-sysupgrade${{ env.FILE_DATE }}
         tag_name: ${{ steps.tag.outputs.release_tag }}
         body_path: release.txt
 
@@ -273,6 +273,6 @@ jobs:
         to: ${{ secrets.TELEGRAM_CHAT_ID }}
         token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       run: |
-        curl -i -X GET "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage?chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&format=markdown&text=✅%20固件顺利编译完成!%20✅%0A目标用户:%200xACE8%0A资源仓库:%20${{ github.repository }}%0A固件名称:%20padavanonly-2305-laoliu-mt7981-xr30-emmc-sysupgrade${{ env.FILE_DATE }}"
+        curl -i -X GET "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage?chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&format=markdown&text=✅%20固件顺利编译完成!%20✅%0A目标用户:%200xACE8%0A目标设备:%20CMCC-XR30%0A资源仓库:%20${{ github.repository }}%0A固件名称:%20annawrt-2305-laoliu-mt7981-xr30-emmc-sysupgrade${{ env.FILE_DATE }}"
 
         
